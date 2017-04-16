@@ -44,9 +44,7 @@ const getAllCompanies = (Company) => {
 };
 
 const getCompany = (Company, id) => {
-  return Company.findOne({
-    where: { id }
-  });
+  return Company.findById(id);
 };
 
 const updateCompany = (company, body) => {

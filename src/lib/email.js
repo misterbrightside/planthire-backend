@@ -5,8 +5,8 @@ const smptConfig = {
   port: 25,
   secure: false,
   auth: {
-      user: 'sender@beakon.ie',
-      pass: 'eS6t4UcT=l'
+    user: 'sender@beakon.ie',
+    pass: 'eS6t4UcT=l'
   }
 };
 
