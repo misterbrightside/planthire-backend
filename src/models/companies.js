@@ -22,7 +22,7 @@ const enterCompanyIntoDatabase = (Company, data) => {
     email: data.email,
     phone: data.phone
   });
-}
+};
 
 const createCompany = (Company, data) => {
   return checkIfEmailAlreadyExists(Company, data.email)
@@ -40,10 +40,27 @@ const createCompany = (Company, data) => {
 
 const getAllCompanies = (Company) => {
   return Company.findAll();
+};
+
+const getCompany = (Company, id) => {
+  return Company.findOne({
+    where: { id }
+  });
+};
+
+const updateCompany = (company, body) => {
+  return company.update(body);
+};
+
+const deleteCompany = company => {
+  return company.destroy();
 }
 
 export default {
   Company,
   createCompany,
-  getAllCompanies
+  getAllCompanies,
+  getCompany,
+  updateCompany,
+  deleteCompany
 };
