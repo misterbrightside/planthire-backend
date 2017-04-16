@@ -20,10 +20,8 @@ export default ({ config, db, Company }) => resource({
 	create({ body }, res) {
 		CompanyModel.createCompany(Company, body)
 			.then(company => res.status(200).json(company))
-			.then(() => console.log('hello'))
-			.catch(error => {
-				res.status(error.status).json(error);
-			});
+			.then(() => CompanyModel.sendNewCompanyRegistrationMail(body))
+			.catch(error => res.status(error.status).json(error));
 	},
 
 	read({ company }, res) {

@@ -1,4 +1,5 @@
 import { STRING } from 'sequelize';
+import sendMail from '../lib/email';
 
 const Company = connection => {
   return connection.define('company', {
@@ -54,7 +55,11 @@ const updateCompany = (company, body) => {
 
 const deleteCompany = company => {
   return company.destroy();
-}
+};
+
+const sendNewCompanyRegistrationMail = body => {
+  sendMail({ to: body.email });
+};
 
 export default {
   Company,
@@ -62,5 +67,6 @@ export default {
   getAllCompanies,
   getCompany,
   updateCompany,
-  deleteCompany
+  deleteCompany,
+  sendNewCompanyRegistrationMail
 };
