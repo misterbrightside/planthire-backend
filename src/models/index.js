@@ -8,10 +8,11 @@ const { Location } = LocationModel;
 const initModels = connection => {
   const CompanyInit = Company(connection);
   const LocationInit = Location(connection);
-  CompanyInit.hasOne(LocationInit, { as: 'CompanyLocation' });
+  CompanyInit.belongsTo(LocationInit);
 
   const CompanySync = CompanyInit.sync({ force: false });
-  const LocationSync = LocationInit.sync({ force: true }).then(() => LocationInit.bulkCreate(COUNTIES));
+  const LocationSync = LocationInit.sync({ force: true });
+  LocationSync.then(() => LocationInit.bulkCreate(COUNTIES)); 
 
   return Promise.all([CompanySync, LocationSync]).then(values => {
     return {

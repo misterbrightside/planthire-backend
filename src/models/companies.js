@@ -22,21 +22,23 @@ const enterCompanyIntoDatabase = (Company, data) => {
     correspodenceName: data.correspodenceName,
     email: data.email,
     phone: data.phone
-  });
+  }).then(company => {
+    return company.setLocation(data.locationId);
+  })
 };
 
 const createCompany = (Company, data) => {
   return checkIfEmailAlreadyExists(Company, data.email)
-  .then(companies => {
-      return new Promise((resolve, reject) => {
-        return companies.count === 0 ? 
-          resolve(enterCompanyIntoDatabase(Company, data)) :
-          reject({
-            status: 409,
-            erorr: 'Email is already in use.'
-          });
+    .then(companies => {
+        return new Promise((resolve, reject) => {
+          return companies.count === 0 ? 
+            resolve(enterCompanyIntoDatabase(Company, data)) :
+            reject({
+              status: 409,
+              erorr: 'Email is already in use.'
+            });
+        });
       });
-    });
 };
 
 const getAllCompanies = (Company) => {
