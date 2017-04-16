@@ -18,7 +18,6 @@ export default ({ config, db, Company }) => resource({
 
 	/** GET / - List all entities */
 	index({ params }, res) {
-		console.log('hi?');
 		CompanyModel.getAllCompanies(Company)
 			.then(companies => 	res.json(companies));
 	},
@@ -26,8 +25,11 @@ export default ({ config, db, Company }) => resource({
 	/** POST / - Create a new entity */
 	create({ body }, res) {
 		CompanyModel.createCompany(Company, body)
-			.then(company => res.json(company))
-			.then(() => console.log('hello'));
+			.then(company => res.status(200).json(company))
+			.then(() => console.log('hello'))
+			.catch(error => {
+				res.status(error.status).json(error);
+			});
 	},
 
 	/** GET /:id - Return a given entity */
