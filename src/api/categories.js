@@ -7,11 +7,16 @@ export default ({ config, db, models }) => {
     id: 'category',
     
     load(req, id, callback) {
-      callback(0, 0);
+      CategoryModel.getCategory({ Category, subcatRelation, serviceRelation }, id)
+        .then(category => {
+          const error = category ? null : 'Category not found';
+          callback(error, category);
+        });
 		},
 
-		index({ params }, res) {
-      CategoryModel.getAllCategories({ Category, subcatRelation, serviceRelation })
+		index({ query }, res) {
+      const { nested } = query;
+      CategoryModel.getAllCategories({ Category, subcatRelation, serviceRelation }, nested)
         .then(categories => res.json(categories));
 		},
 
@@ -21,8 +26,7 @@ export default ({ config, db, models }) => {
 		},
 
 		read({ category }, res) {
-			// res.json(category);
-      res.json({lad: 'laaaaaaaaaaaad'});
+      res.json(category);
 		},
 
 		update({ category, body }, res) {
