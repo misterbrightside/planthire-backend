@@ -2,11 +2,14 @@ import resource from 'resource-router-middleware';
 import CompanyModel from '../models/companies';
 
 export default ({ config, db, models }) => {
-	const { Company, Location } = models;
+	const { 
+		Company, Location, NotificationAreas,
+		InterestedCategories, InterestedSubcategories, InterestedServices
+	} = models;
 	return resource({
 		id : 'company',
 		load(req, id, callback) {
-			CompanyModel.getCompany({Company, Location}, id)
+			CompanyModel.getCompany({Company, Location, NotificationAreas}, id)
 				.then(company => {
 					const error = company ? null : 'Company not found';
 					callback(error, company);
@@ -14,15 +17,22 @@ export default ({ config, db, models }) => {
 		},
 
 		index({ params }, res) {
-			CompanyModel.getAllCompanies({Company, Location})
+			CompanyModel.getAllCompanies({Company, Location, NotificationAreas})
 				.then(companies => res.json(companies));
 		},
 
 		create({ body }, res) {
-			CompanyModel.createCompany(Company, body)
+			CompanyModel.createCompany({Company, NotificationAreas}, body)
 				.then(company => res.status(200).json(company))
-				.then(() => CompanyModel.sendNewCompanyRegistrationMail(body))
-				.catch(error => res.status(error.status).json(error));
+				// .then(() => CompanyModel.sendNewCompanyRegistrationMail(body))
+				.catch(error => {
+					if (error.name === 'SequelizeUniqueConstraintError') {
+						res.status(409).json(error.errors);
+					} else {
+						console.log(error);
+						res.status(500).json(error);
+					}
+				});
 		},
 
 		read({ company }, res) {

@@ -5,14 +5,11 @@ const Company = connection => {
   return connection.define('company', {
     companyName: { type: STRING },
     correspodenceName: { type: STRING },
-    email: { type: STRING },
+    email: {
+      type: STRING,
+      unique: true
+    },
     phone: { type: STRING }
-  });
-};
-
-const checkIfEmailAlreadyExists = (Company, email) => {
-  return Company.findAndCountAll({
-    where: { email }
   });
 };
 
@@ -22,28 +19,19 @@ const enterCompanyIntoDatabase = (Company, data) => {
     correspodenceName: data.correspodenceName,
     email: data.email,
     phone: data.phone
-  }).then(company => {
-    return company.setLocation(data.locationId);
-  })
+  }).then(company => company.setLocation(data.locationId))
+    .then(company => {
+      return company.setLocations(data.notificationAreas);
+    });
 };
 
-const createCompany = (Company, data) => {
-  return checkIfEmailAlreadyExists(Company, data.email)
-    .then(companies => {
-        return new Promise((resolve, reject) => {
-          return companies.count === 0 ? 
-            resolve(enterCompanyIntoDatabase(Company, data)) :
-            reject({
-              status: 409,
-              erorr: 'Email is already in use.'
-            });
-        });
-      });
+const createCompany = ({Company}, data) => {
+  return enterCompanyIntoDatabase(Company, data);
 };
 
-const getJoiningCriteria = (Location) => {
+const getJoiningCriteria = (Location, NotificationAreas, id) => {
   return {
-    include: [Location],
+    include: [Location], 
     attributes: { exclude: ['locationId'] }
   };
 }
@@ -52,8 +40,8 @@ const getAllCompanies = ({Company, Location}) => {
   return Company.findAll(getJoiningCriteria(Location));
 };
 
-const getCompany = ({Company, Location}, id) => {
-   return Company.findById(id, getJoiningCriteria(Location));
+const getCompany = ({Company, Location, NotificationAreas}, id) => {
+   return Company.findById(id, getJoiningCriteria(Location, NotificationAreas, id));
 };
 
 const updateCompany = (company, body) => {
