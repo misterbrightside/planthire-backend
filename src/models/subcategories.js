@@ -8,6 +8,14 @@ const Subcategory = connection => {
   });
 };
 
+const getSubcategory = ({ Subcategory, serviceRelation }, categoryId, id) => {
+  return Subcategory.findOne({
+    where: { categoryId, id },
+    include: [serviceRelation]
+  });
+};
+
 export default {
-  Subcategory
+  Subcategory,
+  getSubcategory
 };
