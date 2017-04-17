@@ -6,7 +6,7 @@ export default ({ config, db, models }) => {
 	return resource({
 		id : 'company',
 		load(req, id, callback) {
-			CompanyModel.getCompany(Company, id)
+			CompanyModel.getCompany({Company, Location}, id)
 				.then(company => {
 					const error = company ? null : 'Company not found';
 					callback(error, company);
@@ -14,7 +14,7 @@ export default ({ config, db, models }) => {
 		},
 
 		index({ params }, res) {
-			CompanyModel.getAllCompanies(Company)
+			CompanyModel.getAllCompanies({Company, Location})
 				.then(companies => res.json(companies));
 		},
 

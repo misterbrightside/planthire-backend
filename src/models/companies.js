@@ -41,12 +41,19 @@ const createCompany = (Company, data) => {
       });
 };
 
-const getAllCompanies = (Company) => {
-  return Company.findAll();
+const getJoiningCriteria = (Location) => {
+  return {
+    include: [Location],
+    attributes: { exclude: ['locationId'] }
+  };
+}
+
+const getAllCompanies = ({Company, Location}) => {
+  return Company.findAll(getJoiningCriteria(Location));
 };
 
-const getCompany = (Company, id) => {
-  return Company.findById(id);
+const getCompany = ({Company, Location}, id) => {
+   return Company.findById(id, getJoiningCriteria(Location));
 };
 
 const updateCompany = (company, body) => {
