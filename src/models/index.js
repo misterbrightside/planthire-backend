@@ -24,8 +24,8 @@ const initModels = connection => {
   } = hookToConnection(connection);
 
   Company.belongsTo(Location);
-  Company.belongsToMany(Location, { through: NotificationAreas, foreignKey: 'companyId' });
-  Location.belongsToMany(Company, { through: NotificationAreas, foreignKey: 'locationId' });
+  Company.belongsToMany(Location, { as: 'NotificationAreas', through: NotificationAreas, foreignKey: 'companyId' });
+  Location.belongsToMany(Company, { as: 'NotificationAreas', through: NotificationAreas, foreignKey: 'locationId' });
 
   const subcatRelation = Category.hasMany(Subcategory);
   const serviceRelation = Subcategory.hasMany(Service);

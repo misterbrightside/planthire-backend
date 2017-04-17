@@ -21,7 +21,7 @@ const enterCompanyIntoDatabase = (Company, data) => {
     phone: data.phone
   }).then(company => company.setLocation(data.locationId))
     .then(company => {
-      return company.setLocations(data.notificationAreas);
+      return company.setNotificationAreas(data.notificationAreas);
     });
 };
 
@@ -30,10 +30,7 @@ const createCompany = ({Company}, data) => {
 };
 
 const getJoiningCriteria = (Location, NotificationAreas, id) => {
-  return {
-    include: [Location], 
-    attributes: { exclude: ['locationId'] }
-  };
+  return { include: [{ all: true, nested: true }]};
 }
 
 const getAllCompanies = ({Company, Location}) => {
