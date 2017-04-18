@@ -4,7 +4,7 @@ import sendMail from '../lib/email';
 const Company = connection => {
   return connection.define('company', {
     companyName: { type: STRING },
-    correspodenceName: { type: STRING },
+    correspondenceName: { type: STRING },
     email: {
       type: STRING,
       unique: true
@@ -16,7 +16,7 @@ const Company = connection => {
 const enterCompanyIntoDatabase = (Company, data) => {
   return Company.create({
     companyName: data.companyName,
-    correspodenceName: data.correspodenceName,
+    correspondenceName: data.correspondenceName,
     email: data.email,
     phone: data.phone
   }).then(company => company.setLocation(data.locationId))
@@ -35,7 +35,8 @@ const createCompany = ({Company}, data) => {
 };
 
 const getJoiningCriteria = (Location, NotificationAreas, id) => {
-  return ({ include: [{ all: true }]});
+  // return ({ include: [{ all: true }]});
+  return {};
 }
 
 const getAllCompanies = ({Company, Location}) => {
