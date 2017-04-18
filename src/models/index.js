@@ -7,7 +7,7 @@ import NotificationAreasModel from './notificationAreas';
 import InterestedCategoriesModel from './interestedCategories';
 import InterestedSubcategoriesModel from './interestedSubcategories';
 import InterestedServicesModel from './interestedServices';
-import COUNTIES from '../lib/counties';
+// import COUNTIES from '../lib/counties';
 
 const hookToConnection = connection => {
   return {
@@ -49,7 +49,7 @@ const initModels = connection => {
   const SubcategorySync = Subcategory.sync({ force: false });
   const ServiceSync = Service.sync({ force: false });
 
-  LocationSync.then(() => Location.bulkCreate(COUNTIES)); 
+  // LocationSync.then(() => Location.bulkCreate(COUNTIES)); 
 
   return Promise.all([
     CompanySync, LocationSync, CategorySync, SubcategorySync,
