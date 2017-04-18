@@ -21,10 +21,12 @@ const enterCompanyIntoDatabase = (Company, data) => {
     phone: data.phone
   }).then(company => company.setLocation(data.locationId))
     .then(company => {
-      company.setNotificationAreas(data.notificationAreas);
-      company.setCategories(data.interestedCategories);
-      company.setSubcategories(data.interestedSubcategories);
-      company.setServices(data.interestedServices);
+      const notificationsPromise = company.setNotificationAreas(data.notificationAreas);
+      const categoriesPromise = company.setCategories(data.interestedCategories);
+      const subcategoriesPromise = company.setSubcategories(data.interestedSubcategories);
+      const servicesPromise = company.setServices(data.interestedServices);
+      return Promise.all([notificationsPromise, categoriesPromise, subcategoriesPromise, servicesPromise])
+        .then(values => company);
     });
 };
 
