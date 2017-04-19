@@ -21,6 +21,11 @@ const User = (models, connection) => {
   return UserModel;
 };
 
+const getAllUsers = ({ User }) => {
+  return User.findAll({ include: [{ all: true }]});
+};
+
 export default {
   User,
+  getAllUsers
 };

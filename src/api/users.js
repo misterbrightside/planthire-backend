@@ -2,7 +2,7 @@ import resource from 'resource-router-middleware';
 import UserModel from '../models/users';
 
 export default ({ config, db, models }) => {
-  const { Subcategory } = models;
+  const { User } = models;
   return resource({
     id: 'subcategory',
     
@@ -11,7 +11,8 @@ export default ({ config, db, models }) => {
 		},
 
 		index({ query }, res) {
-
+			UserModel.getAllUsers({ User })
+				.then(users => res.json(users));
 		},
 
 		create({ body }, res) {

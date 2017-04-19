@@ -1,4 +1,4 @@
-import { INTEGER, STRING, DATE, ENUM } from 'sequelize';
+import { INTEGER, STRING, DATE, ENUM, BOOLEAN } from 'sequelize';
 
 const Order = (models, connection) => {
   const Order = connection.define('order', {
@@ -41,7 +41,8 @@ const Order = (models, connection) => {
     endDate: { type: DATE },
     transportMethod: {
       type: ENUM('collection', 'delivery')
-    }
+    },
+    completed: { type: BOOLEAN }
   }, {
   });
   Order.belongsTo(models.User);
@@ -63,7 +64,8 @@ const createOrder = ({ Order }, data) => {
     startDate: data.startDate,
     endDate: data.endDate,
     userId: data.userId,
-    transportMethod: data.transportMethod
+    transportMethod: data.transportMethod,
+    completed: false
   });
 };
 
