@@ -1,8 +1,8 @@
 import { STRING } from 'sequelize';
 import sendMail from '../lib/email';
 
-const Company = connection => {
-  return connection.define('company', {
+const Company = (models, connection) => {
+  const CompanyModel = connection.define('company', {
     companyName: { type: STRING },
     correspondenceName: { type: STRING },
     email: {
@@ -11,6 +11,12 @@ const Company = connection => {
     },
     phone: { type: STRING }
   });
+  CompanyModel.belongsTo(models.Location);
+  CompanyModel.belongsToMany(models.Location, { as: 'notificationAreas', through: models.NotificationAreas, foreignKey: 'companyId' });
+  CompanyModel.belongsToMany(models.Category, { through: models.InterestedCategories, foreignKey: 'companyId' });
+  CompanyModel.belongsToMany(models.Subcategory, { through: models.InterestedSubcategories, foreignKey: 'companyId' });
+  CompanyModel.belongsToMany(models.Service, { through: models.InterestedServices, foreignKey: 'companyId'});
+  return CompanyModel;
 };
 
 const enterCompanyIntoDatabase = (Company, data) => {
@@ -35,7 +41,6 @@ const createCompany = ({Company}, data) => {
 };
 
 const getJoiningCriteria = (Location, NotificationAreas, id) => {
-  // return ({ include: [{ all: true }]});
   return {};
 }
 

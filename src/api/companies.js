@@ -3,8 +3,7 @@ import CompanyModel from '../models/companies';
 
 export default ({ config, db, models }) => {
 	const { 
-		Company, Location, NotificationAreas,
-		InterestedCategories, InterestedSubcategories, InterestedServices
+		Company, Location, NotificationAreas
 	} = models;
 	return resource({
 		id : 'company',
