@@ -11,13 +11,24 @@ const Order = ({connection, models}) => {
     }, 
     subcategoryId: { 
       type: INTEGER,
-      model: models.Subcategory,
-      key: 'id',
+      references: {
+        model: models.Subcategory,
+        key: 'id'
+      }
     },
     serviceId: { 
       type: INTEGER,
-      model: models.Services,
-      key: 'id'
+      references: {
+        model: models.Services,
+        key: 'id'
+      }
+    },
+    locationId: {
+      type: INTEGER,
+      references: {
+        model: models.Location,
+        key: 'id'
+      }
     },
     email: {
       type: STRING,
@@ -30,6 +41,7 @@ const Order = ({connection, models}) => {
   }, {
   });
   Order.belongsTo(models.Category);
+  Order.belongsTo(models.Location);
   Order.belongsTo(models.Subcategory);
   Order.belongsTo(models.Service);
   return Order;
@@ -40,6 +52,7 @@ const createOrder = ({ Order }, data) => {
     categoryId: data.categoryId,
     subcategoryId: data.subcategoryId,
     serviceId: data.service,
+    locationId: data.locationId,
     email: data.email,
     startDate: data.startDate,
     endDate: data.endDate,
