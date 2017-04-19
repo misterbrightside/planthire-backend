@@ -2,7 +2,7 @@ import resource from 'resource-router-middleware';
 import OrderModel from '../models/orders';
 
 export default ({ config, db, models }) => {
-  const { Company, Order, User } = models;
+  const { Company, Order, User, NotificationAreas, Location } = models;
   return resource({
     id: 'subcategory',
     
@@ -16,7 +16,7 @@ export default ({ config, db, models }) => {
 		},
 
 		create({ body }, res) {
-			OrderModel.processNewOrder({ Company, Order, User }, body)
+			OrderModel.processNewOrder({ Location, NotificationAreas, Company, Order, User }, body)
 				.then(order => res.json(order));
 		},
 

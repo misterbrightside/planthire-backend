@@ -1,5 +1,6 @@
 import { INTEGER, STRING, DATE, ENUM, BOOLEAN } from 'sequelize';
-import UserModel from '../models/users';
+import UserModel from './users';
+import CompanyModel from './companies';
 
 const Order = (models, connection) => {
   const Order = connection.define('order', {
@@ -71,13 +72,12 @@ const createOrder = ({ Order }, data) => {
   });
 };
 
-const processNewOrder = ({ Company, Order, User }, orderData) => {
+const processNewOrder = ({ Location, NotificationAreas, Company, Order, User }, orderData) => {
   return UserModel.getOrCreateUser({ User }, orderData)
     .then(UserModel.maybeProcessNewUser)
     .then(userId => createOrder({ Order }, Object.assign(orderData, { userId })))
     .then(order => {
-      //return getAllRelevantCompanies(...).then(companies => notifiy(companies));
-      return order;
+      return CompanyModel.getCompaniesInterestedInLocation({ Location, NotificationAreas, Company }, order.locationId);
     });
 };
  

@@ -1,4 +1,4 @@
-import { STRING } from 'sequelize';
+import { STRING, col } from 'sequelize';
 import sendMail from '../lib/email';
 
 const Company = (models, connection) => {
@@ -41,7 +41,7 @@ const createCompany = ({Company}, data) => {
 };
 
 const getJoiningCriteria = (Location, NotificationAreas, id) => {
-  return {};
+  return { include: [{ all: true }]};
 }
 
 const getAllCompanies = ({Company, Location}) => {
@@ -64,8 +64,20 @@ const sendNewCompanyRegistrationMail = body => {
   sendMail({ to: body.email });
 };
 
+const getCompaniesInterestedInLocation = ({ Location, NotificationAreas, Company }, location) =>  {
+  console.log(location);
+  return Company.findAll({
+    include: [{
+      model: Location,
+      as: 'notificationAreas',
+      where: { id: location }
+    }]
+  });
+};
+
 export default {
   Company,
+  getCompaniesInterestedInLocation,
   createCompany,
   getAllCompanies,
   getCompany,
