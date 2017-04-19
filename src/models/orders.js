@@ -1,6 +1,6 @@
-import { INTEGER, STRING, DATE } from 'sequelize';
+import { INTEGER, STRING, DATE, ENUM } from 'sequelize';
 
-const Order = ({connection, models}) => {
+const Order = (models, connection) => {
   const Order = connection.define('order', {
     categoryId: { 
       type: INTEGER,
@@ -32,14 +32,18 @@ const Order = ({connection, models}) => {
     },
     email: {
       type: STRING,
-    //    references: {
-    //    model: User
-    //   },
+       references: {
+       model: models.User
+      },
     },
     startDate: { type: DATE },
     endDate: { type: DATE },
+    transportMethod: {
+      type: ENUM('collection', 'delivery')
+    }
   }, {
   });
+  Order.belongsTo(models.User);
   Order.belongsTo(models.Category);
   Order.belongsTo(models.Location);
   Order.belongsTo(models.Subcategory);
@@ -56,6 +60,7 @@ const createOrder = ({ Order }, data) => {
     email: data.email,
     startDate: data.startDate,
     endDate: data.endDate,
+    transportMethod: data.transportMethod
   });
 };
 

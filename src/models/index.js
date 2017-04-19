@@ -8,6 +8,7 @@ import InterestedCategoriesModel from './interestedCategories';
 import InterestedSubcategoriesModel from './interestedSubcategories';
 import InterestedServicesModel from './interestedServices';
 import OrderModel from './orders';
+import UserModel from './users';
 
 const hookToConnection = connection => {
   const Location = LocationModel.Location(connection);
@@ -18,7 +19,8 @@ const hookToConnection = connection => {
   const InterestedCategories = InterestedCategoriesModel.InterestedCategories(connection);
   const InterestedSubcategories = InterestedSubcategoriesModel.InterestedSubcategories(connection);
   const InterestedServices = InterestedServicesModel.InterestedServices(connection);
-  const Order = OrderModel.Order({ connection, models: { Category, Subcategory, Service, Location }});
+  const User = UserModel.User({ Location }, connection);
+  const Order = OrderModel.Order({ Category, Subcategory, Service, Location, User }, connection);
   const subcatRelation = Category.hasMany(Subcategory);
   const serviceRelation = Subcategory.hasMany(Service);
 
@@ -34,7 +36,7 @@ const hookToConnection = connection => {
   };
 
   const Company = CompanyModel.Company(models, connection);
-  return Object.assign(models, { Company, Order, subcatRelation, serviceRelation });
+  return Object.assign(models, { Company, Order, User, subcatRelation, serviceRelation });
 }
 
 const initModels = connection => {
@@ -42,13 +44,14 @@ const initModels = connection => {
     Company, Location, Category,
     Subcategory, Service, NotificationAreas,
     InterestedCategories, InterestedSubcategories, InterestedServices,
-    Order, subcatRelation, serviceRelation
+    Order, subcatRelation, serviceRelation, User
   } = hookToConnection(connection);
 
   const promisesSyncToDb = [
     Company, Location, Category, Subcategory, Service,
     NotificationAreas, InterestedCategories,
-    InterestedServices, InterestedSubcategories, Order
+    InterestedServices, InterestedSubcategories, Order,
+    User
   ].map(model => model.sync({ force: false }));
 
   const promisesForceSyncToDb = [].map(model => model.sync({ force: true }));
@@ -66,6 +69,7 @@ const initModels = connection => {
       InterestedServices: values[7],
       InterestedSubcategories: values[8],
       Order: values[9],
+      User: values[10],
       subcatRelation,
       serviceRelation,
     };
