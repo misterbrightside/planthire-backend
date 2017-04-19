@@ -2,7 +2,7 @@ import resource from 'resource-router-middleware';
 import OrderModel from '../models/orders';
 
 export default ({ config, db, models }) => {
-  const { Order } = models;
+  const { Order, User } = models;
   return resource({
     id: 'subcategory',
     
@@ -16,7 +16,8 @@ export default ({ config, db, models }) => {
 		},
 
 		create({ body }, res) {
-      OrderModel.createOrder({ Order }, body)
+      // OrderModel.createOrder({ Order }, body)
+			OrderModel.getOrCreateUserForOrder({ Order, User }, body)
 				.then(order => res.json(order));
 		},
 

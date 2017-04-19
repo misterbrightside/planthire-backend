@@ -33,7 +33,8 @@ const Order = (models, connection) => {
     email: {
       type: STRING,
        references: {
-       model: models.User
+        model: models.User,
+        key: 'email'
       },
     },
     startDate: { type: DATE },
@@ -44,6 +45,7 @@ const Order = (models, connection) => {
   }, {
   });
   Order.belongsTo(models.User);
+  models.User.hasMany(Order);
   Order.belongsTo(models.Category);
   Order.belongsTo(models.Location);
   Order.belongsTo(models.Subcategory);
@@ -60,10 +62,34 @@ const createOrder = ({ Order }, data) => {
     email: data.email,
     startDate: data.startDate,
     endDate: data.endDate,
+    userId: data.userId,
     transportMethod: data.transportMethod
   });
 };
 
+const getOrCreateUserForOrder = ({ Order, User }, data) => {
+  return new Promise((resolve, reject) => {
+    User.findOrCreate({
+      where: {
+        email: data.email 
+      }, 
+      defaults: {
+        name: data.name,
+        phone: data.phone,
+        locationId: data.locationId
+      }
+    }).spread((user, created) => {
+      resolve({ user, created });
+    });
+  }).then(({user, created}) => {
+    if (created) {
+      console.log('new user stuff here');
+      //User.sendWelcomeEmail().then(...);
+    }
+    return createOrder({ Order }, Object.assign(data, { userId: user.id }));
+  });
+};
+ 
 const getAllOrders = ({ Order }) => {
   return Order.findAll({ include: [{ all: true }]});
   // return Order.findAll();
@@ -72,5 +98,6 @@ const getAllOrders = ({ Order }) => {
 export default {
   Order,
   createOrder,
-  getAllOrders
+  getAllOrders,
+  getOrCreateUserForOrder
 };
