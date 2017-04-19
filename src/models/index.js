@@ -7,6 +7,7 @@ import NotificationAreasModel from './notificationAreas';
 import InterestedCategoriesModel from './interestedCategories';
 import InterestedSubcategoriesModel from './interestedSubcategories';
 import InterestedServicesModel from './interestedServices';
+import OrderModel from './orders';
 // import COUNTIES from '../lib/counties';
 
 const hookToConnection = connection => {
@@ -30,6 +31,8 @@ const initModels = connection => {
     InterestedCategories, InterestedSubcategories, InterestedServices
   } = hookToConnection(connection);
 
+  const Order = OrderModel.Order({ connection, models: { Category, Subcategory, Service }});
+
   Company.belongsTo(Location);
   Company.belongsToMany(Location, { as: 'notificationAreas', through: NotificationAreas, foreignKey: 'companyId' });
   Company.belongsToMany(Category, { through: InterestedCategories, foreignKey: 'companyId' });
@@ -48,13 +51,14 @@ const initModels = connection => {
   const CategorySync = Category.sync({ force: false });
   const SubcategorySync = Subcategory.sync({ force: false });
   const ServiceSync = Service.sync({ force: false });
+  const OrderSync = Order.sync({ force: false });
 
   // LocationSync.then(() => Location.bulkCreate(COUNTIES)); 
 
   return Promise.all([
     CompanySync, LocationSync, CategorySync, SubcategorySync,
     ServiceSync, NotificationAreasSync, InterestedCategoriesSync,
-    InterestedServicesSync, InterestedSubcategoriesSync
+    InterestedServicesSync, InterestedSubcategoriesSync, OrderSync
   ]).then(values => {
     return {
       Company: values[0],
@@ -66,6 +70,7 @@ const initModels = connection => {
       InterestedCategories: values[6],
       InterestedServices: values[7],
       InterestedSubcategories: values[8],
+      Order: values[9],
       subcatRelation,
       serviceRelation,
     };
