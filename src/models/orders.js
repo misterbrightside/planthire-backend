@@ -1,4 +1,5 @@
 import { INTEGER, STRING, DATE, ENUM, BOOLEAN } from 'sequelize';
+import UserModel from '../models/users';
 
 const Order = (models, connection) => {
   const Order = connection.define('order', {
@@ -32,7 +33,8 @@ const Order = (models, connection) => {
     },
     email: {
       type: STRING,
-       references: {
+      unique: true,
+      references: {
         model: models.User,
         key: 'email'
       },
@@ -69,27 +71,14 @@ const createOrder = ({ Order }, data) => {
   });
 };
 
-const getOrCreateUserForOrder = ({ Order, User }, data) => {
-  return new Promise((resolve, reject) => {
-    User.findOrCreate({
-      where: {
-        email: data.email 
-      }, 
-      defaults: {
-        name: data.name,
-        phone: data.phone,
-        locationId: data.locationId
-      }
-    }).spread((user, created) => {
-      resolve({ user, created });
+const processNewOrder = ({ Company, Order, User }, orderData) => {
+  return UserModel.getOrCreateUser({ User }, orderData)
+    .then(UserModel.maybeProcessNewUser)
+    .then(userId => createOrder({ Order }, Object.assign(orderData, { userId })))
+    .then(order => {
+      //return getAllRelevantCompanies(...).then(companies => notifiy(companies));
+      return order;
     });
-  }).then(({user, created}) => {
-    if (created) {
-      console.log('new user stuff here');
-      //User.sendWelcomeEmail().then(...);
-    }
-    return createOrder({ Order }, Object.assign(data, { userId: user.id }));
-  });
 };
  
 const getAllOrders = ({ Order }) => {
@@ -101,5 +90,5 @@ export default {
   Order,
   createOrder,
   getAllOrders,
-  getOrCreateUserForOrder
+  processNewOrder
 };
