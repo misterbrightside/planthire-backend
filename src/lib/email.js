@@ -1,5 +1,10 @@
 import { createTransport } from 'nodemailer';
 
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 const smptConfig = {
   host: 'smtp1r.cp.blacknight.com',
   port: 25,
@@ -12,16 +17,17 @@ const smptConfig = {
 
 const transporter = createTransport(smptConfig);
 
-const mailOptions = ({ to }) => ({
+const mailOptions = ({ to, html }) => ({
   from: '"Plant Hire Ireland" <noreply@planthireireland.com>',
-  to: to,
+  to,
   subject: 'hello',
   text: 'test yasss',
-  html: '<b>test meeee!!!!!</b>'
+  html
 });
 
-const sendMail = ({ to }) => {
-  const options = mailOptions({ to });
+const sendMail = ({ to, html }) => {
+  if (!validateEmail(to)) return null;
+  const options = mailOptions({ to, html });
   transporter.sendMail(options, (error, info) => {
     if (error) console.log(error);
     else console.log('Message %s sent: %s', info.messageId, info.response);

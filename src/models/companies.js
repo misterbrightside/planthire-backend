@@ -61,19 +61,31 @@ const deleteCompany = company => {
 };
 
 const sendNewCompanyRegistrationMail = body => {
-  sendMail({ to: body.email });
+  sendMail({ to: body.email, html: 'welcome to plant hire ireland' });
 };
 
-const getCompaniesInterestedInLocation = ({ Location, NotificationAreas, Company }, location) =>  {
-  console.log(location);
+const getCompaniesInterestedInLocation = ({ Location, Service, Company }, order) =>  {
   return Company.findAll({
     include: [{
       model: Location,
       as: 'notificationAreas',
-      where: { id: location }
-    }]
+      where: { id: order.locationId }
+    }, {
+      model: Service,
+      where: { id: order.serviceId }
+    }],
+    attributes: ['email']
   });
 };
+
+const sendNotificationEmail = emailAddress => {
+  return sendMail({ to: emailAddress, html: 'Hey someone wants ur stuff.' });
+}
+
+const notifyCompanies = ({ Company }, emails) => {
+  console.log(emails);
+  return emails.map(email => sendNotificationEmail(email));
+}
 
 export default {
   Company,
@@ -83,5 +95,6 @@ export default {
   getCompany,
   updateCompany,
   deleteCompany,
-  sendNewCompanyRegistrationMail
+  sendNewCompanyRegistrationMail,
+  notifyCompanies
 };
