@@ -18,8 +18,10 @@ export default ({ config, db, models }) => {
 	api.use('/users', users({ config, db, models }));
 	api.get('/', passport.authenticateUser(), (req, res) => res.json({ version }));
 	api.post('/sessions/user', passport.authenticate('local-user'), (req, res) => {
-		console.log('hi????');
 		res.json({hi: req.user})
-	})
+	});
+	api.post('/sessions/company', passport.authenticate('local-company'), (req, res) => {
+		res.json({hi: req.user})
+	});
 	return api;
 }
