@@ -8,6 +8,7 @@ export default ({ config, db, models }) => {
 	return resource({
 		id: 'company',
 		load(req, id, callback) {
+			console.log(req.isAuthenicated);
 			CompanyModel.getCompany({Company, Location, NotificationAreas}, id)
 				.then(company => {
 					const error = company ? null : 'Company not found';

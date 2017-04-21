@@ -6,6 +6,7 @@ import categories from './categories';
 import subcategories from './subcategories';
 import orders from './orders';
 import users from './users';
+import passport from 'passport';
 
 export default ({ config, db, models }) => {
 	let api = Router();
@@ -16,5 +17,9 @@ export default ({ config, db, models }) => {
 	api.use('/orders', orders({ config, db, models }));
 	api.use('/users', users({ config, db, models }));
 	api.get('/', (req, res) => res.json({ version }));
+	api.post('/sessions', passport.authenticate('local'), (req, res) => {
+		console.log('hi????');
+		res.json({hi: req.user})
+	})
 	return api;
 }

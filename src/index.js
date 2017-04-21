@@ -1,5 +1,7 @@
 import http from 'http';
 import express from 'express';
+import session from 'express-session';
+import connectSequelize from 'connect-session-sequelize';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -8,6 +10,8 @@ import middleware from './middleware';
 import api from './api';
 import config from './config.json';
 import initModels from './models/';
+import passport from 'passport';
+import { initStrategy } from './authenicate/init';
 
 let app = express();
 app.server = http.createServer(app);
@@ -24,8 +28,23 @@ app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
 
-initializeDb(db => {
+const SequelizeStore = connectSequelize(session.Store);
+
+initializeDb(db => {	
+	const store = new SequelizeStore({ db });
+	app.use(session({
+		secret: 'supersecretwhichillfixsoon',
+		store: store,
+		resave: false,
+		proxy: false,
+		saveUninitialized: false
+	}));
+	store.sync();
+	app.use(passport.initialize()); 
+	app.use(passport.session());  
+
 	initModels(db).then(models => {
+		initStrategy(models);
 		app.use(middleware({ config, db }));
 		app.use('/api', api({ config, db, models }));
 		app.server.listen(process.env.PORT || config.port);
