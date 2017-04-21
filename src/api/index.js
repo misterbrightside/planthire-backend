@@ -16,8 +16,8 @@ export default ({ config, db, models }) => {
 	api.use('/categories/:id/subcategories', subcategories({ config, db, models }));
 	api.use('/orders', orders({ config, db, models }));
 	api.use('/users', users({ config, db, models }));
-	api.get('/', (req, res) => res.json({ version }));
-	api.post('/sessions', passport.authenticate('local'), (req, res) => {
+	api.get('/', passport.authenticateUser(), (req, res) => res.json({ version }));
+	api.post('/sessions/user', passport.authenticate('local-user'), (req, res) => {
 		console.log('hi????');
 		res.json({hi: req.user})
 	})
