@@ -51,10 +51,10 @@ const initModels = connection => {
     Company, Location, Category, Subcategory, Service,
     NotificationAreas, InterestedCategories,
     InterestedServices, InterestedSubcategories, Order,
-    User
+    
   ].map(model => model.sync({ force: false }));
 
-  const promisesForceSyncToDb = [].map(model => model.sync({ force: true }));
+  const promisesForceSyncToDb = [User].map(model => model.sync({ force: true }));
   const promises = promisesSyncToDb.concat(promisesForceSyncToDb);
 
   return Promise.all(promises).then(values => {

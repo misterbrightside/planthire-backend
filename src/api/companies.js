@@ -6,7 +6,7 @@ export default ({ config, db, models }) => {
 		Company, Location, NotificationAreas
 	} = models;
 	return resource({
-		id : 'company',
+		id: 'company',
 		load(req, id, callback) {
 			CompanyModel.getCompany({Company, Location, NotificationAreas}, id)
 				.then(company => {
@@ -22,8 +22,10 @@ export default ({ config, db, models }) => {
 
 		create({ body }, res) {
 			CompanyModel.createCompany({Company, NotificationAreas}, body)
-				.then(company => res.status(200).json(company))
-				// .then(() => CompanyModel.sendNewCompanyRegistrationMail(body))
+				.then(companyObject => {
+					res.status(200).json(companyObject.company)
+					return CompanyModel.sendNewCompanyRegistrationMail(companyObject.password, body)
+				})
 				.catch(error => {
 					if (error.name === 'SequelizeUniqueConstraintError') {
 						res.status(409).json(error.errors);

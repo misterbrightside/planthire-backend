@@ -1,5 +1,7 @@
 import { STRING, col } from 'sequelize';
 import sendMail from '../lib/email';
+import generatePassword from 'password-generator';
+import { getPasswordHash } from '../lib/util';
 
 const Company = (models, connection) => {
   const CompanyModel = connection.define('company', {
@@ -9,6 +11,7 @@ const Company = (models, connection) => {
       type: STRING,
       unique: true
     },
+    passwordHash: { type: STRING },
     phone: { type: STRING }
   });
   CompanyModel.belongsTo(models.Location);
@@ -20,20 +23,24 @@ const Company = (models, connection) => {
 };
 
 const enterCompanyIntoDatabase = (Company, data) => {
-  return Company.create({
-    companyName: data.companyName,
-    correspondenceName: data.correspondenceName,
-    email: data.email,
-    phone: data.phone
-  }).then(company => company.setLocation(data.locationId))
-    .then(company => {
-      const notificationsPromise = company.setNotificationAreas(data.notificationAreas);
-      const categoriesPromise = company.setCategories(data.interestedCategories);
-      const subcategoriesPromise = company.setSubcategories(data.interestedSubcategories);
-      const servicesPromise = company.setServices(data.interestedServices);
-      return Promise.all([notificationsPromise, categoriesPromise, subcategoriesPromise, servicesPromise])
-        .then(values => company);
-    });
+  const passwordForUser = generatePassword(10, true, /[\w\d\?\-]/);
+  return getPasswordHash(passwordForUser).then(hash => {
+    return Company.create({
+      companyName: data.companyName,
+      correspondenceName: data.correspondenceName,
+      email: data.email,
+      phone: data.phone,
+      passwordHash: hash
+    }).then(company => company.setLocation(data.locationId))
+      .then(company => {
+        const notificationsPromise = company.setNotificationAreas(data.notificationAreas);
+        const categoriesPromise = company.setCategories(data.interestedCategories);
+        const subcategoriesPromise = company.setSubcategories(data.interestedSubcategories);
+        const servicesPromise = company.setServices(data.interestedServices);
+        return Promise.all([notificationsPromise, categoriesPromise, subcategoriesPromise, servicesPromise])
+          .then(values => company);
+      })
+  }).then(company => ({ password: passwordForUser, company }));
 };
 
 const createCompany = ({Company}, data) => {
@@ -60,8 +67,8 @@ const deleteCompany = company => {
   return company.destroy();
 };
 
-const sendNewCompanyRegistrationMail = body => {
-  sendMail({ to: body.email, html: 'welcome to plant hire ireland' });
+const sendNewCompanyRegistrationMail = (password, body) => {
+  sendMail({ to: body.email, html: `welcome to plant hire ireland, ur pass is ${password}` });
 };
 
 const getCompaniesInterestedInLocation = ({ Location, Service, Company }, order) =>  {
