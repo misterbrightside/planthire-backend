@@ -1,14 +1,16 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import bcrypt from 'bcrypt';
 
 const getUserStrategy = (models, email, password, done) => {
   const { User } = models;
-  console.log(email, password, 'hhhhhhhhhh');
   User.findOne({
     where: { email }
   }).then(user => {
     console.log('a user');
-    return done(null, { user, type: 'USER' });
+    bcrypt.compare(password, user.passwordHash, (err, hash) => {
+      return hash ? done(null, { user, type: 'USER' }) : done(null, false);
+    });
   });
 };
 
@@ -50,7 +52,6 @@ export const initStrategy = (models) => {
 
   passport.deserializeUser(function(sessionObject, done) {
     const { user, userType } = sessionObject;
-    console.log(user, userType, 'mooshshshsh');
     switch(userType) {
       default:
          User.findOne({
