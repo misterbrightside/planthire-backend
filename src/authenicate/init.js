@@ -8,7 +8,8 @@ const getUserStrategy = (models, email, password, done) => {
     where: { email }
   }).then(user => {
     bcrypt.compare(password, user.passwordHash, (err, hash) => {
-      return hash ? done(null, { user, type: 'USER' }) : done(null, false);
+      console.log('here');
+      return hash ? done(null, { user: user.email, type: 'USER' }) : done(null, false);
     });
   });
 };
@@ -19,18 +20,18 @@ const getCompanyStrategy = (models, email, password, done) => {
     where: { email }
   }).then(company => {
     bcrypt.compare(password, company.passwordHash, (err, hash) => {
-      return hash ? done(null, { company, type: 'COMPANY' }) : done(null, false);
+      return hash ? done(null, { company: company.email, type: 'COMPANY' }) : done(null, false);
     });
   });
 }
 
-function authenticateUser() {
+function authenticateBy(type) {
   return function (req, res, next) {
-    if (req.isAuthenticated()) {
-      console.log('hi?????????');
+    console.log(req);
+    if (req.isAuthenticated() && req.user.$modelOptions.name.singular === type) {
       return next();
     }
-    res.redirect('/');
+    res.sendStatus(403);
   }
 }
 
@@ -54,22 +55,21 @@ export const initStrategy = (models) => {
 
   passport.deserializeUser(function(sessionObject, done) {
     const { company, user, type } = sessionObject;
-    console.log(sessionObject);
     switch(type) {
       case 'COMPANY': 
         console.log('hye');
         return Company.findOne({
-            where: { email: company.email }
+            where: { email: company }
           }).then(companyObj => done(null, companyObj)); 
       case 'USER':
          return User.findOne({
-          where: { email: user.email }
+          where: { email: user }
         }).then(userObject => done(null, userObject));   
       default:
         done(null, false);
     }
   });
 
-  passport.authenticateUser = authenticateUser;
+  passport.authenticateBy = authenticateBy;
 };
 

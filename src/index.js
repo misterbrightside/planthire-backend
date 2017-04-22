@@ -12,17 +12,25 @@ import config from './config.json';
 import initModels from './models/';
 import passport from 'passport';
 import { initStrategy } from './authenicate/init';
+import cookieParser from 'cookie-parser';
 
 let app = express();
 app.server = http.createServer(app);
+
+app.use(passport.initialize()); 
+app.use(passport.session());  
 
 // logger
 app.use(morgan('dev'));
 
 // 3rd party middleware
 app.use(cors({
-	exposedHeaders: config.corsHeaders
+	exposedHeaders: config.corsHeaders,
+	origin: 'http://localhost:3000',
+	credentials: true
 }));
+
+app.use(cookieParser('supersecretwhichillfixsoon'));
 
 app.use(bodyParser.json({
 	limit : config.bodyLimit
@@ -40,8 +48,6 @@ initializeDb(db => {
 		saveUninitialized: false
 	}));
 	store.sync();
-	app.use(passport.initialize()); 
-	app.use(passport.session());  
 
 	initModels(db).then(models => {
 		initStrategy(models);
