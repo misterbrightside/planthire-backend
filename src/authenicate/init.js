@@ -27,7 +27,6 @@ const getCompanyStrategy = (models, email, password, done) => {
 
 function authenticateBy(type) {
   return function (req, res, next) {
-    console.log(req);
     if (req.isAuthenticated() && req.user.$modelOptions.name.singular === type) {
       return next();
     }
