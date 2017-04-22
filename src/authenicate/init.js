@@ -9,7 +9,7 @@ const getUserStrategy = (models, email, password, done) => {
   }).then(user => {
     bcrypt.compare(password, user.passwordHash, (err, hash) => {
       console.log('here');
-      return hash ? done(null, { user: user.email, type: 'USER' }) : done(null, false);
+      return hash ? done(null, { user: user, type: 'USER' }) : done(null, false);
     });
   });
 };
@@ -20,7 +20,7 @@ const getCompanyStrategy = (models, email, password, done) => {
     where: { email }
   }).then(company => {
     bcrypt.compare(password, company.passwordHash, (err, hash) => {
-      return hash ? done(null, { company: company.email, type: 'COMPANY' }) : done(null, false);
+      return hash ? done(null, { company: company, type: 'COMPANY' }) : done(null, false);
     });
   });
 }

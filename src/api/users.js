@@ -4,10 +4,14 @@ import UserModel from '../models/users';
 export default ({ config, db, models }) => {
   const { User } = models;
   return resource({
-    id: 'subcategory',
+    id: 'user',
     
     load({ baseUrl }, id, callback) {
-
+			UserModel.getUser({ User }, id)
+				.then(user => {
+					const error = user ? null : 'Company not found';
+					callback(error, user);
+				});
 		},
 
 		index({ query }, res) {
@@ -18,8 +22,9 @@ export default ({ config, db, models }) => {
 		create({ body }, res) {
 		},
 
-		read({ subcategory }, res) {
-       res.json(subcategory);
+		read({ user }, res) {
+			console.log(user);
+      res.json(user);
 		},
 
 		update({ category, body }, res) {

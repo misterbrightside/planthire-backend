@@ -1,4 +1,4 @@
-import { STRING, INTEGER, VIRTUAL } from 'sequelize';
+import { STRING, INTEGER } from 'sequelize';
 import generatePassword from 'password-generator';
 import { getPasswordHash } from '../lib/util';
 
@@ -59,9 +59,14 @@ const maybeProcessNewUser = ({ user, created, password }) => {
   return user.id;
 };
 
+const getUser = ({ User }, id) => {
+  return User.findById(id, { include: [{ all: true, nested: true }]});
+};
+
 export default {
   User,
   getAllUsers,
   getOrCreateUser,
+  getUser,
   maybeProcessNewUser
 };
