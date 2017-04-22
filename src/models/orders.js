@@ -96,25 +96,12 @@ const getAllOrders = ({ Order }) => {
 }
 
 const getAllOrdersForCompany = ({Location, Service, Company, Order, User}, id) => {
-  // return Company.findById(id, { include: [{ all: true }]});
-// Company.findAll({
-//     include: [{
-//       model: Location,
-//       as: 'notificationAreas',
-//       where: { id: order.locationId }
-//     }, {
-//       model: Service,
-//       where: { id: order.serviceId }
-//     }],
-//     attributes: ['email']
-//   });
-  // return Order.findAll({
-  //   include: [{
-  //     model: Company,
-  //     as: 'relevantOrders'
-  //   }]
-  // });
-  return Company.findById(id, { include: [{ all: true }]});
+  return Order.findAll({
+    include: [{
+      model: Company,
+      where: { id }
+    }]
+  });
 };
 
 export default {
