@@ -23,7 +23,6 @@ export default ({ config, db, models }) => {
 		},
 
 		read({ user }, res) {
-			console.log(user);
       res.json(user);
 		},
 

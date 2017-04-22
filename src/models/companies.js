@@ -81,7 +81,7 @@ const getCompaniesInterestedInLocation = ({ Location, Service, Company }, order)
       model: Service,
       where: { id: order.serviceId }
     }],
-    attributes: ['email']
+    attributes: ['email', 'id']
   });
 };
 
@@ -90,7 +90,6 @@ const sendNotificationEmail = emailAddress => {
 }
 
 const notifyCompanies = ({ Company }, emails) => {
-  console.log(emails);
   return emails.map(email => sendNotificationEmail(email));
 }
 

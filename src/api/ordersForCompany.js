@@ -1,6 +1,11 @@
 import resource from 'resource-router-middleware';
 import OrderModel from '../models/orders';
 
+const getCompanyId = (url) => {
+	const path = url.split('/');
+	return path[path.length - 2];
+};
+
 export default ({ config, db, models }) => {
   const { Company, Order, User, Service, Location } = models;
   return resource({
@@ -10,8 +15,8 @@ export default ({ config, db, models }) => {
 
 		},
 
-		index({ query }, res) {
-			OrderModel.getAllOrders({ Order })
+		index({ baseUrl }, res) {
+			OrderModel.getAllOrdersForCompany({ Location, Service, Company, Order, User }, getCompanyId(baseUrl))
 				.then(orders => res.json(orders));
 		},
 

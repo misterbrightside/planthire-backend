@@ -31,10 +31,11 @@ const getOrCreateUser = ({ User }, data) => {
       // TODO: should create an erorr status here. Redirect back to UI so that they login.
       User.findOrCreate({
         where: {
-          email: data.email 
+          email: data.email
         }, 
         defaults: {
           name: data.name,
+          email: data.email,
           phone: data.phone,
           locationId: data.locationId,
           passwordHash: hash

@@ -34,7 +34,6 @@ const Order = (models, connection) => {
     },
     email: {
       type: STRING,
-      unique: true,
       references: {
         model: models.User,
         key: 'email'
@@ -76,9 +75,19 @@ const processNewOrder = ({ Location, Service, Company, Order, User }, orderData)
   return UserModel.getOrCreateUser({ User }, orderData)
     .then(UserModel.maybeProcessNewUser)
     .then(userId => createOrder({ Order }, Object.assign(orderData, { userId })))
-    .then(order => CompanyModel.getCompaniesInterestedInLocation({ Location, Service, Company }, order))
+    .then(order => {
+      return new Promise((resolve, reject) => {
+        CompanyModel.getCompaniesInterestedInLocation({ Location, Service, Company }, order)
+          .then(companies => {
+            const ids = companies.map(company => company.id);
+            order.setCompanies(ids);
+            resolve(companies);
+          });
+      });
+    })
     .then(companies => companies.map(company => company.email))
-    .then(emails => CompanyModel.notifyCompanies({ Company }, emails));
+    .then(emails => CompanyModel.notifyCompanies({ Company }, emails))
+    .catch(err => console.error(err));
 };
  
 const getAllOrders = ({ Order }) => {
@@ -86,9 +95,32 @@ const getAllOrders = ({ Order }) => {
   // return Order.findAll();
 }
 
+const getAllOrdersForCompany = ({Location, Service, Company, Order, User}, id) => {
+  // return Company.findById(id, { include: [{ all: true }]});
+// Company.findAll({
+//     include: [{
+//       model: Location,
+//       as: 'notificationAreas',
+//       where: { id: order.locationId }
+//     }, {
+//       model: Service,
+//       where: { id: order.serviceId }
+//     }],
+//     attributes: ['email']
+//   });
+  // return Order.findAll({
+  //   include: [{
+  //     model: Company,
+  //     as: 'relevantOrders'
+  //   }]
+  // });
+  return Company.findById(id, { include: [{ all: true }]});
+};
+
 export default {
   Order,
   createOrder,
+  getAllOrdersForCompany,
   getAllOrders,
   processNewOrder
 };

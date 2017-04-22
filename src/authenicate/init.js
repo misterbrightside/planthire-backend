@@ -8,7 +8,6 @@ const getUserStrategy = (models, email, password, done) => {
     where: { email }
   }).then(user => {
     bcrypt.compare(password, user.passwordHash, (err, hash) => {
-      console.log('here');
       return hash ? done(null, { user: user, type: 'USER' }) : done(null, false);
     });
   });
@@ -56,7 +55,6 @@ export const initStrategy = (models) => {
     const { company, user, type } = sessionObject;
     switch(type) {
       case 'COMPANY': 
-        console.log('hye');
         return Company.findOne({
             where: { email: company }
           }).then(companyObj => done(null, companyObj)); 

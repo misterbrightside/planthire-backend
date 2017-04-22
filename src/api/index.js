@@ -4,13 +4,15 @@ import companies from './companies';
 import locations from './locations';
 import categories from './categories';
 import subcategories from './subcategories';
+import ordersForCompany from './ordersForCompany';
 import orders from './orders';
 import users from './users';
 import passport from 'passport';
 
 export default ({ config, db, models }) => {
-	let api = Router();
+	let api = Router({ mergeParams: true });
 	api.use('/companies', companies({ config, db, models }));
+	api.use('/companies/:companyId/orders', ordersForCompany({ config, db, models }));
 	api.use('/locations', locations({ config, db, models }));
 	api.use('/categories', categories({ config, db, models }));
 	api.use('/categories/:id/subcategories', subcategories({ config, db, models }));

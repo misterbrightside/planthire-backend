@@ -7,6 +7,7 @@ import NotificationAreasModel from './notificationAreas';
 import InterestedCategoriesModel from './interestedCategories';
 import InterestedSubcategoriesModel from './interestedSubcategories';
 import InterestedServicesModel from './interestedServices';
+import InterestedCompaniesModel from './interestedCompanies';
 import OrderModel from './orders';
 import UserModel from './users';
 
@@ -19,10 +20,11 @@ const hookToConnection = connection => {
   const InterestedCategories = InterestedCategoriesModel.InterestedCategories(connection);
   const InterestedSubcategories = InterestedSubcategoriesModel.InterestedSubcategories(connection);
   const InterestedServices = InterestedServicesModel.InterestedServices(connection);
+  const InterestedCompanies = InterestedCompaniesModel.InterestedCompanies(connection);
   const User = UserModel.User({ Location }, connection);
-  const Order = OrderModel.Order({ Category, Subcategory, Service, Location, User }, connection);
   const subcatRelation = Category.hasMany(Subcategory);
   const serviceRelation = Subcategory.hasMany(Service);
+  const Order = OrderModel.Order({ Category, Subcategory, Service, Location, User }, connection);
 
   const models = {
     Location,
@@ -32,11 +34,13 @@ const hookToConnection = connection => {
     Service,
     InterestedCategories,
     InterestedSubcategories,
-    InterestedServices
+    InterestedServices,
+    Order
   };
 
   const Company = CompanyModel.Company(models, connection);
-  return Object.assign(models, { Company, Order, User, subcatRelation, serviceRelation });
+  Order.belongsToMany(Company, { through: InterestedCompanies, foreignKey: 'orderId' });
+  return Object.assign(models, { Company, User, subcatRelation, InterestedCompanies, serviceRelation });
 }
 
 const initModels = connection => {
@@ -44,14 +48,14 @@ const initModels = connection => {
     Company, Location, Category,
     Subcategory, Service, NotificationAreas,
     InterestedCategories, InterestedSubcategories, InterestedServices,
-    Order, subcatRelation, serviceRelation, User
+    Order, subcatRelation, serviceRelation, User, InterestedCompanies
   } = hookToConnection(connection);
 
   const promisesSyncToDb = [
     Company, Location, Category, Subcategory, Service,
     NotificationAreas, InterestedCategories,
     InterestedServices, InterestedSubcategories, Order,
-    User
+    User, InterestedCompanies
   ].map(model => model.sync({ force: false }));
 
   const promisesForceSyncToDb = [].map(model => model.sync({ force: true }));
@@ -70,6 +74,7 @@ const initModels = connection => {
       InterestedSubcategories: values[8],
       Order: values[9],
       User: values[10],
+      InterestedCompanies: values[11],
       subcatRelation,
       serviceRelation,
     };
