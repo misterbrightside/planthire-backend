@@ -21,7 +21,7 @@ const Order = (models, connection) => {
     serviceId: { 
       type: INTEGER,
       references: {
-        model: models.Services,
+        model: models.Service,
         key: 'id'
       }
     },
@@ -95,11 +95,19 @@ const getAllOrders = ({ Order }) => {
   // return Order.findAll();
 }
 
-const getAllOrdersForCompany = ({Location, Service, Company, Order, User}, id) => {
+const getAllOrdersForCompany = ({ Location, Service, Company, Order, User, Subcategory, Services, Category }, id) => {
   return Order.findAll({
     include: [{
       model: Company,
       where: { id }
+    }, {
+      model: User
+    }, {
+      model: Service
+    }, {
+      model: Category
+    }, {
+      model: Subcategory
     }]
   });
 };

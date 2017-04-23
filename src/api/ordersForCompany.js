@@ -7,7 +7,7 @@ const getCompanyId = (url) => {
 };
 
 export default ({ config, db, models }) => {
-  const { Company, Order, User, Service, Location } = models;
+  const { Company, Order, User, Service, Location, Subcategory, Category } = models;
   return resource({
     id: 'order',
     
@@ -16,7 +16,7 @@ export default ({ config, db, models }) => {
 		},
 
 		index({ baseUrl }, res) {
-			OrderModel.getAllOrdersForCompany({ Location, Service, Company, Order, User }, getCompanyId(baseUrl))
+			OrderModel.getAllOrdersForCompany({ Location, Service, Company, Order, User, Subcategory, Category }, getCompanyId(baseUrl))
 				.then(orders => res.json(orders));
 		},
 
